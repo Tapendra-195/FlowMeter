@@ -1,0 +1,39 @@
+@startuml
+hide empty description
+skinparam Shadowing false	
+skinparam ArrowFontSize 20
+skinparam State {
+  AttributeFontColor black
+  AttributeFontName serif
+  AttributeFontSize  20
+  BackgroundColor white
+  BorderColor black
+  EndColor black
+  FontColor black
+  FontName Sanserif
+  FontSize 20
+  FontStyle bold
+  StartColor black
+  ArrowColor black	
+}
+
+Start: entry/ Turn on the pump and the chiller. t=:0
+CheckPrime: entry/ t=:0 \nCheck if the pump is primed.
+Running: Circulation is running normally.
+Leaking: entry/ t=:0 \nCheck if there is a leak in the circulation.
+Off: entry/ Turn off the pump and the chiller.
+
+[*] --> Start: /
+
+Start --> CheckPrime: t>=1s
+CheckPrime --> Running: FLOW_OK
+CheckPrime --> Off: t>=prime_check_timeout 
+Running --> Leaking: LEAK_DETECTED
+Running --> CheckPrime: FLOW_LOW
+Leaking --> Off: t>=leak_check_timeout
+Leaking --> Running: FLOW_OK
+Start --> Off: OFF
+CheckPrime --> Off: OFF
+Running --> Off: OFF
+Leaking --> Off: OFF
+@enduml
